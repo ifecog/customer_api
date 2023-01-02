@@ -20,3 +20,8 @@ from rest_framework.response import Response
 class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
+
+
+class ProfessionViewSet(viewsets.ModelViewSet):
+    queryset = Profession.objects.all()
+    serializer_class = ProfessionSerializer
