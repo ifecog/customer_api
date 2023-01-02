@@ -18,13 +18,28 @@ from rest_framework.response import Response
 
 
 class CustomerViewSet(viewsets.ModelViewSet):
-    queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
+
+    def get_queryset(self):
+        active_customers = Customer.objects.filter(is_active=True)
+        return active_customers
+
+    def list(self, request, *args, **kwargs):
+        customers = Customer.object.filter(id=1)
+        serializer = CustomerSerializer(customers, many=True)
+        return Response(serializer.data)
+    
+    def retrieve(self, request, *args, **kwargs):
+        return Response({'message': 'not allowed'})
+        # instance = self.get_object()
+        # serializer = self.get_serializer(instance)
+        # return Response(serializer.data)
 
 
 class ProfessionViewSet(viewsets.ModelViewSet):
     queryset = Profession.objects.all()
     serializer_class = ProfessionSerializer
+
 
 class DataSheetViewSet(viewsets.ModelViewSet):
     queryset = Datasheet.objects.all()
