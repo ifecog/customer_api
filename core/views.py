@@ -25,3 +25,12 @@ class CustomerViewSet(viewsets.ModelViewSet):
 class ProfessionViewSet(viewsets.ModelViewSet):
     queryset = Profession.objects.all()
     serializer_class = ProfessionSerializer
+
+class DataSheetViewSet(viewsets.ModelViewSet):
+    queryset = Datasheet.objects.all()
+    serializer_class = DatasheetSerializer
+
+
+class DocumentViewSet(viewsets.ModelViewSet):
+    queryset = Document.objects.all()
+    serializer_class = DocumentSerializer
