@@ -13,6 +13,7 @@ from .serializers import (
     DocumentSerializer
 )
 from rest_framework.response import Response
+from django.http.response import HttpResponseNotAllowed
 
 # Create your views here.
 
@@ -25,15 +26,58 @@ class CustomerViewSet(viewsets.ModelViewSet):
         return active_customers
 
     def list(self, request, *args, **kwargs):
-        customers = Customer.object.filter(id=1)
+        customers = Customer.objects.filter(id=1)
         serializer = CustomerSerializer(customers, many=True)
         return Response(serializer.data)
-    
+
     def retrieve(self, request, *args, **kwargs):
-        return Response({'message': 'not allowed'})
-        # instance = self.get_object()
-        # serializer = self.get_serializer(instance)
-        # return Response(serializer.data)
+        # return HttpResponseNotAllowed('not allowed')
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
+    def create(self, request, *args, **kwargs):
+        data = request.data
+        customer = Customer.objects.create(
+            name=data['name'], address=data['address'], data_sheet_id=data['data_sheet']
+        )
+        profession = Profession.objects.get(id=data['profession'])
+
+        customer.professions.add(profession)
+        customer.save()
+
+        serializer = CustomerSerializer(customer)
+        return Response(serializer.data)
+
+    def update(self, request, *args, **kwargs):
+        customer = self.get_object()
+        data = request.data
+        customer.name = data['name']
+        customer.address = data['address']
+        customer.data_sheet_id = data['data_sheet']
+
+        profession = Profession.objects.get(id=data['profession'])
+
+        for p in customer.professions.all():
+            customer.professions.remove(p)
+
+        customer.professions.add(profession)
+        customer.save()
+
+        serializer = CustomerSerializer(customer)
+        return Response(serializer.data)
+
+    def partial_update(self, request, *args, **kwargs):
+        customer = self.get_object()
+        customer.name = request.data.get('name', customer.name)
+        customer.address = request.data.get('address', customer.address)
+        customer.data_sheet_id = request.data.get(
+            'data_sheet', customer.data_sheet_id)
+
+        customer.save()
+
+        serializer = CustomerSerializer(customer)
+        return Response(serializer.data)
 
 
 class ProfessionViewSet(viewsets.ModelViewSet):
