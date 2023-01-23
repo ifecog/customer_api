@@ -14,6 +14,7 @@ from .serializers import (
     DocumentSerializer
 )
 from rest_framework.response import Response
+from rest_framework import filters
 from django.http.response import HttpResponseNotAllowed
 
 # Create your views here.
@@ -21,22 +22,31 @@ from django.http.response import HttpResponseNotAllowed
 
 class CustomerViewSet(viewsets.ModelViewSet):
     serializer_class = CustomerSerializer
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['name', 'address', 'data_sheet__description']
+    filterset_fields = ['name', ]
+    ordering_fields = ['name', ]
 
     def get_queryset(self):
-        id = self.request.query_params.get('id', None)
-        status = True if self.request.query_params['is_active'] == 'True' else False
+        address = self.request.query_params.get('address', None)
 
-        if id:
-            customers = Customer.objects.filter(id=id, is_active=status)
+        if self.request.query_params.get('is_active') == 'False':
+            status = False
+        else:
+            status = True
+
+        if address:
+            customers = Customer.objects.filter(
+                address__icontains=address, is_active=status)
         else:
             customers = Customer.objects.filter(is_active=status)
 
         return customers
 
-    def list(self, request, *args, **kwargs):
-        customers = self.get_queryset()
-        serializer = CustomerSerializer(customers, many=True)
-        return Response(serializer.data)
+    # def list(self, request, *args, **kwargs):
+    #     customers = self.get_queryset()
+    #     serializer = CustomerSerializer(customers, many=True)
+    #     return Response(serializer.data)
 
     def retrieve(self, request, *args, **kwargs):
         # return HttpResponseNotAllowed('not allowed')
