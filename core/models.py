@@ -5,7 +5,7 @@ from django.db import models
 
 class Profession(models.Model):
     description = models.CharField(max_length=50)
-    
+
     def __str__(self):
         return self.description
 
@@ -24,6 +24,13 @@ class Customer(models.Model):
     professions = models.ManyToManyField(Profession)
     data_sheet = models.OneToOneField(Datasheet, on_delete=models.CASCADE)
     is_active = models.BooleanField(default=False)
+
+    @property
+    def status_message(self):
+        if self.is_active:
+            return 'Customer Active'
+        else:
+            return 'Customer Inactive'
 
     def __str__(self):
         return self.name
