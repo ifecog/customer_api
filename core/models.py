@@ -5,7 +5,11 @@ from django.db import models
 
 class Profession(models.Model):
     description = models.CharField(max_length=50)
-
+    
+    @property
+    def status(self):
+        return True
+    
     def __str__(self):
         return self.description
 
@@ -31,6 +35,9 @@ class Customer(models.Model):
             return 'Customer Active'
         else:
             return 'Customer Inactive'
+        
+    def num_professions(self):
+        return self.professions.all().count()
 
     def __str__(self):
         return self.name
