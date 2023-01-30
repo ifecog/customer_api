@@ -15,6 +15,7 @@ from .serializers import (
 )
 from rest_framework.response import Response
 from rest_framework import filters
+from rest_framework.authentication import TokenAuthentication
 from django.http.response import HttpResponseNotAllowed
 
 # Create your views here.
@@ -26,6 +27,7 @@ class CustomerViewSet(viewsets.ModelViewSet):
     search_fields = ['name', 'address', 'data_sheet__description']
     filterset_fields = ['name', ]
     ordering_fields = ['name', ]
+    authentication_classes = [TokenAuthentication, ]
 
     def get_queryset(self):
         address = self.request.query_params.get('address', None)
