@@ -16,6 +16,13 @@ from .serializers import (
 from rest_framework.response import Response
 from rest_framework import filters
 from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import (
+    AllowAny,
+    IsAdminUser,
+    IsAuthenticatedOrReadOnly,
+    DjangoModelPermissions,
+    DjangoModelPermissionsOrAnonReadOnly,
+)
 from django.http.response import HttpResponseNotAllowed
 
 # Create your views here.
@@ -136,13 +143,18 @@ class CustomerViewSet(viewsets.ModelViewSet):
 class ProfessionViewSet(viewsets.ModelViewSet):
     queryset = Profession.objects.all()
     serializer_class = ProfessionSerializer
+    authentication_classes = [TokenAuthentication, ]
+    permission_classes = [IsAdminUser, ]
 
 
 class DataSheetViewSet(viewsets.ModelViewSet):
     queryset = Datasheet.objects.all()
     serializer_class = DatasheetSerializer
+    permission_classes = [AllowAny, ]
 
 
 class DocumentViewSet(viewsets.ModelViewSet):
     queryset = Document.objects.all()
     serializer_class = DocumentSerializer
+    authentication_classes = [TokenAuthentication, ]
+    permission_classes = [DjangoModelPermissionsOrAnonReadOnly, ]
