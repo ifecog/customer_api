@@ -5,11 +5,11 @@ from django.db import models
 
 class Profession(models.Model):
     description = models.CharField(max_length=50)
-    
+
     @property
     def status(self):
         return True
-    
+
     def __str__(self):
         return self.description
 
@@ -26,7 +26,8 @@ class Customer(models.Model):
     name = models.CharField(max_length=50)
     address = models.CharField(max_length=100)
     professions = models.ManyToManyField(Profession)
-    data_sheet = models.OneToOneField(Datasheet, on_delete=models.CASCADE)
+    data_sheet = models.OneToOneField(
+        Datasheet, on_delete=models.CASCADE, null=True, blank=True)
     is_active = models.BooleanField(default=False)
 
     @property
@@ -35,7 +36,7 @@ class Customer(models.Model):
             return 'Customer Active'
         else:
             return 'Customer Inactive'
-        
+
     def num_professions(self):
         return self.professions.all().count()
 
