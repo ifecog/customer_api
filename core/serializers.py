@@ -30,7 +30,7 @@ class DatasheetSerializer(serializers.ModelSerializer):
 
 class CustomerSerializer(serializers.ModelSerializer):
     num_professions = serializers.SerializerMethodField()
-    data_sheet = DatasheetSerializer(read_only=True)
+    data_sheet = DatasheetSerializer()
     professions = ProfessionSerializer(many=True)
     document_set = DocumentSerializer(many=True)
 
@@ -46,7 +46,12 @@ class CustomerSerializer(serializers.ModelSerializer):
         document_set = validated_data['document_set']
         del validated_data['document_set']
 
+        data_sheet = validated_data['data_sheet']
+        del validated_data['data_sheet']
+
+        d_sheet = Datasheet.objects.create(**data_sheet)
         customer = Customer.objects.create(**validated_data)
+        customer.data_sheet = d_sheet
 
         for doc in document_set:
             Document.objects.create(
